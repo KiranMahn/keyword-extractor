@@ -1,0 +1,1 @@
+The goal of this project is to take in a blob of text and find a list of up to ten keywords using term frequency index 

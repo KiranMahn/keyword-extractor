@@ -1,25 +1,52 @@
 package main
 
-import "sort"
+import (
+	"os"
+	"regexp"
+)
 
-func getKeywords(wordFrequency TermFrequencyIndex, topN int) {
-	// Sort the word frequency index by frequency
-	type kv struct {
-		Key   string
-		Value float64
-	}
-	var sorted []kv
-	for k, v := range wordFrequency {
-		sorted = append(sorted, kv{k, v})
+func getStringKeywords(content string, numKeywords int) {
+	// parse text
+	stopwords, err := LoadStopwords("./data/stopwords.txt")
+	if err != nil {
+		print("Error loading stopwords:", err)
 	}
 
-	// Sort by value (frequency)
-	sort.Slice(sorted, func(i, j int) bool {
-		return sorted[i].Value > sorted[j].Value
-	})
+	wordSplitter := regexp.MustCompile(`[^a-zA-Z0-9]+`)
 
-	// Print top N keywords
-	for i := 0; i < topN && i < len(sorted); i++ {
-		println(sorted[i].Key, ":", sorted[i].Value)
+	wordCount := getWordCount(content, stopwords, wordSplitter)
+	wordFrequency := getWordFrequency(content, stopwords, wordSplitter, wordCount)
+
+	getKeywords(wordFrequency, numKeywords)
+
+}
+
+func getFileKeywords(filePath string, numKeywords int) {
+	// parse file
+	content, err := LoadFileContent(filePath)
+	if err != nil {
+		print("Error loading file content:", err)
+		return
 	}
+
+	stopwords, err := LoadStopwords("./data/stopwords.txt")
+	if err != nil {
+		print("Error loading stopwords:", err)
+		return
+	}
+
+	wordSplitter := regexp.MustCompile(`[^a-zA-Z0-9]+`)
+
+	wordCount := getWordCount(content, stopwords, wordSplitter)
+	wordFrequency := getWordFrequency(content, stopwords, wordSplitter, wordCount)
+
+	getKeywords(wordFrequency, numKeywords)
+}
+
+func LoadFileContent(file string) (string, error) {
+	content, err := os.ReadFile(file)
+	if err != nil {
+		return "", err
+	}
+	return string(content), nil
 }

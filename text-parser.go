@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"fmt"
+	"errors"
 	"os"
 	"strings"
 )
@@ -11,7 +11,7 @@ func LoadStopwords(filePath string) (map[string]struct{}, error) {
 	stopwords := make(map[string]struct{})
 	file, err := os.Open(filePath)
 	if err != nil {
-		fmt.Println("err:", err) // Debugging print
+		return nil, errors.New("Error opening file, check file path: " + err.Error())
 	}
 	defer file.Close()
 
@@ -19,11 +19,15 @@ func LoadStopwords(filePath string) (map[string]struct{}, error) {
 	for scanner.Scan() {
 		word := strings.TrimSpace(scanner.Text())
 		stopwords[word] = struct{}{} // add the word to the stopwords map
-		// fmt.Println("Loaded stopword:", word) // Debugging print
+		delete(stopwords, "")        // remove empty strings if any
 	}
 
 	if err := scanner.Err(); err != nil {
 		return nil, err
+	}
+
+	if len(stopwords) == 0 {
+		return nil, errors.New("no stopwords found in file")
 	}
 	return stopwords, nil
 }

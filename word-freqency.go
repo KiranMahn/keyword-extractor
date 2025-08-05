@@ -55,7 +55,8 @@ func getWordFrequency(content string, wordSplitter *regexp.Regexp, tci TermCount
 }
 
 // getKeywords takes a TermFrequencyIndex and returns the top N keywords based on which words are most frequent
-func getKeywords(wordFrequency TermFrequencyIndex, topN int) {
+// returns the top N keywords in descending order of frequency
+func getKeywords(wordFrequency TermFrequencyIndex, topN int) []string {
 	// Sort the word frequency index by frequency
 	type kv struct {
 		Key   string
@@ -73,8 +74,12 @@ func getKeywords(wordFrequency TermFrequencyIndex, topN int) {
 		return sorted[i].Value > sorted[j].Value
 	})
 
-	// Print top N keywords
+	keywords := make([]string, 0, topN)
+
+	// add the top N keywords
 	for i := 0; i < topN && i < len(sorted); i++ {
-		println(sorted[i].Key)
+		keywords = append(keywords, sorted[i].Key)
 	}
+
+	return keywords
 }

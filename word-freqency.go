@@ -10,6 +10,8 @@ import (
 type TermCountIndex map[string]int
 type TermFrequencyIndex map[string]float64
 
+// Returns a map of words and their counts from the content, excluding stopwords and short words
+// Takes a content string, a map of stopwords, and a regex for splitting words
 func getWordCount(content string, stopwords map[string]struct{}, wordSplitter *regexp.Regexp) TermCountIndex {
 	tci := make(TermCountIndex)
 
@@ -24,16 +26,18 @@ func getWordCount(content string, stopwords map[string]struct{}, wordSplitter *r
 			}
 		}
 	}
+	// handle no valid words case
 	if len(tci) == 0 {
 		println("No valid words found in content")
 		return nil
 	}
 
-	// fmt.Printf("Term count Index: %v\n", tci)
 	return tci
 }
 
-func getWordFrequency(content string, stopwords map[string]struct{}, wordSplitter *regexp.Regexp, tci TermCountIndex) TermFrequencyIndex {
+// Calculates the term frequency index from the content and word count by dividing the number of times each word appears by the total number of words
+// Takes a content string, a regex for splitting words, and a TermCountIndex which is made from getWordCount
+func getWordFrequency(content string, wordSplitter *regexp.Regexp, tci TermCountIndex) TermFrequencyIndex {
 	// make tfi
 	tfi := make(TermFrequencyIndex)
 
@@ -41,16 +45,16 @@ func getWordFrequency(content string, stopwords map[string]struct{}, wordSplitte
 	words := wordSplitter.Split(strings.ToLower(content), -1)
 	totalWords := len(words)
 
-	// for each word
+	// for each word, divide the number of times it appears by the total number of words
 	for _, word := range words {
 		tfi[word] = float64(tci[word]) / float64(totalWords)
 	}
 
-	// fmt.Printf("Term Frequency Index: %v\n", tfi)
 	return tfi
 
 }
 
+// getKeywords takes a TermFrequencyIndex and returns the top N keywords based on which words are most frequent
 func getKeywords(wordFrequency TermFrequencyIndex, topN int) {
 	// Sort the word frequency index by frequency
 	type kv struct {
@@ -58,6 +62,8 @@ func getKeywords(wordFrequency TermFrequencyIndex, topN int) {
 		Value float64
 	}
 	var sorted []kv
+
+	// Convert the map to a slice of key value pairs
 	for k, v := range wordFrequency {
 		sorted = append(sorted, kv{k, v})
 	}

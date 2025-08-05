@@ -16,7 +16,7 @@ func getStringKeywords(content string, numKeywords int) {
 
 	// get word count and frequency
 	wordCount := getWordCount(content, stopwords, wordSplitter)
-	wordFrequency := getWordFrequency(content, stopwords, wordSplitter, wordCount)
+	wordFrequency := getWordFrequency(content, wordSplitter, wordCount)
 
 	// get keywords based on frquency of words that are not stopwords
 	getKeywords(wordFrequency, numKeywords)

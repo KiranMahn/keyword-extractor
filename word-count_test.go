@@ -5,6 +5,20 @@ import (
 	"testing"
 )
 
+/*
+This file tests for:
+- correct word count is returned
+- repeated words are counted correctly
+- case insensitivity of word counting
+- small words are not counted
+- filtering out words starting with digits
+- empty content handling
+- handling content with only stopwords and short words
+- punctuation handling
+- handling content without stopwords present
+- it works with custom word splitters
+- benchmark for getWordCount function
+*/
 func TestGetWordCount(t *testing.T) {
 	// Setup common test data
 	stopwords := map[string]struct{}{
@@ -21,6 +35,7 @@ func TestGetWordCount(t *testing.T) {
 	// Common word splitter regex for splitting on non-word characters
 	wordSplitter := regexp.MustCompile(`\W+`)
 
+	// Test that the correct word count is returned
 	t.Run("BasicWordCounting", func(t *testing.T) {
 		content := "The quick brown fox jumps over the lazy dog"
 		result := getWordCount(content, stopwords, wordSplitter)
@@ -40,6 +55,7 @@ func TestGetWordCount(t *testing.T) {
 			t.Errorf("Expected %d words, got %d", len(expectedWords), len(result))
 		}
 
+		// Verify each expected word is present with the correct count
 		for word, expectedCount := range expectedWords {
 			if actualCount, exists := result[word]; !exists {
 				t.Errorf("Expected word '%s' to be present", word)
@@ -56,6 +72,7 @@ func TestGetWordCount(t *testing.T) {
 		}
 	})
 
+	// Test handling of repeated words
 	t.Run("RepeatedWords", func(t *testing.T) {
 		content := "apple banana apple cherry banana apple"
 		result := getWordCount(content, stopwords, wordSplitter)
@@ -66,6 +83,7 @@ func TestGetWordCount(t *testing.T) {
 			"cherry": 1,
 		}
 
+		// Check if the result matches the expected counts
 		for word, expectedCount := range expected {
 			if actualCount, exists := result[word]; !exists {
 				t.Errorf("Expected word '%s' to be present", word)
@@ -75,6 +93,7 @@ func TestGetWordCount(t *testing.T) {
 		}
 	})
 
+	// Test case insensitivity
 	t.Run("CaseInsensitive", func(t *testing.T) {
 		content := "Apple APPLE apple ApPlE"
 		result := getWordCount(content, stopwords, wordSplitter)
@@ -94,6 +113,7 @@ func TestGetWordCount(t *testing.T) {
 		}
 	})
 
+	// Test that small words are not counted
 	t.Run("FilterShortWords", func(t *testing.T) {
 		content := "a an the programming go is fun"
 		result := getWordCount(content, stopwords, wordSplitter)
@@ -115,6 +135,7 @@ func TestGetWordCount(t *testing.T) {
 		}
 	})
 
+	// Test for filtering out words starting with digits
 	t.Run("FilterDigitWords", func(t *testing.T) {
 		content := "123 456 abc 789def hello 2023 world"
 		result := getWordCount(content, stopwords, wordSplitter)
@@ -136,6 +157,7 @@ func TestGetWordCount(t *testing.T) {
 		}
 	})
 
+	// Test for empty content
 	t.Run("EmptyContent", func(t *testing.T) {
 		content := ""
 		result := getWordCount(content, stopwords, wordSplitter)
@@ -145,6 +167,7 @@ func TestGetWordCount(t *testing.T) {
 		}
 	})
 
+	// Test for content with only stopwords and short words
 	t.Run("OnlyStopwordsAndShortWords", func(t *testing.T) {
 		content := "the and of to a in is it an I"
 		result := getWordCount(content, stopwords, wordSplitter)
@@ -154,6 +177,7 @@ func TestGetWordCount(t *testing.T) {
 		}
 	})
 
+	// Test for punctuation handling
 	t.Run("PunctuationHandling", func(t *testing.T) {
 		content := "Hello, world! How are you? I'm fine."
 		result := getWordCount(content, stopwords, wordSplitter)
@@ -174,6 +198,7 @@ func TestGetWordCount(t *testing.T) {
 		}
 	})
 
+	// Test for handling content without stopwords present
 	t.Run("EmptyStopwords", func(t *testing.T) {
 		content := "the quick brown fox"
 		emptyStopwords := make(map[string]struct{})
@@ -188,6 +213,7 @@ func TestGetWordCount(t *testing.T) {
 		}
 	})
 
+	// Test it works with custom word splitters
 	t.Run("CustomWordSplitter", func(t *testing.T) {
 		content := "word1-word2_word3 word4"
 		// Custom splitter that splits on hyphens and underscores too

@@ -29,7 +29,7 @@ func getWordCount(content string, stopwords map[string]struct{}, wordSplitter *r
 	}
 	// handle no valid words case
 	if len(tci) == 0 {
-		return nil, errors.New("No valid words found in content")
+		return nil, errors.New("no valid words found in content")
 	}
 
 	return tci, nil

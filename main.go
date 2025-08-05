@@ -6,6 +6,9 @@ func main() {
 
 	getStringKeywords(content, 5)
 
-	getFileKeywords("./data/sample.txt", 5)
+	getFileKeywords("./data/sample.txt", 5) // use term frequency from file
+
+	// get keywords for files based on tf-idf
+	//filepaths := []string{"./data/sample.txt", "./data/sample2.txt"}
 
 }

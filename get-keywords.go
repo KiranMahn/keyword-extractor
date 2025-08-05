@@ -11,38 +11,30 @@ func getStringKeywords(content string, numKeywords int) {
 	if err != nil {
 		print("Error loading stopwords:", err)
 	}
-
 	wordSplitter := regexp.MustCompile(`[^a-zA-Z0-9]+`)
 
+	// get word count and frequency
 	wordCount := getWordCount(content, stopwords, wordSplitter)
 	wordFrequency := getWordFrequency(content, stopwords, wordSplitter, wordCount)
 
+	// get keywords based on frquency of words that are not stopwords
 	getKeywords(wordFrequency, numKeywords)
 
 }
 
 func getFileKeywords(filePath string, numKeywords int) {
-	// parse file
+	// load file to string
 	content, err := LoadFileContent(filePath)
 	if err != nil {
 		print("Error loading file content:", err)
 		return
 	}
 
-	stopwords, err := LoadStopwords("./data/stopwords.txt")
-	if err != nil {
-		print("Error loading stopwords:", err)
-		return
-	}
-
-	wordSplitter := regexp.MustCompile(`[^a-zA-Z0-9]+`)
-
-	wordCount := getWordCount(content, stopwords, wordSplitter)
-	wordFrequency := getWordFrequency(content, stopwords, wordSplitter, wordCount)
-
-	getKeywords(wordFrequency, numKeywords)
+	// get keywords from string content
+	getStringKeywords(content, numKeywords)
 }
 
+// LoadFileContent reads the content of a file and returns it as a string.
 func LoadFileContent(file string) (string, error) {
 	content, err := os.ReadFile(file)
 	if err != nil {

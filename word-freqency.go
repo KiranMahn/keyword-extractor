@@ -24,6 +24,10 @@ func getWordCount(content string, stopwords map[string]struct{}, wordSplitter *r
 			}
 		}
 	}
+	if len(tci) == 0 {
+		println("No valid words found in content")
+		return nil
+	}
 
 	// fmt.Printf("Term count Index: %v\n", tci)
 	return tci

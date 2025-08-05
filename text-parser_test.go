@@ -6,6 +6,15 @@ import (
 	"testing"
 )
 
+/*
+This file tests for:
+- loading a vald stopwords file
+- loading a non-existent file
+- loading an empty file
+- loading a file with whitespace and varied formatting
+- loading a file with only a single word
+- benchmark for loading stopwords
+*/
 func TestLoadStopwords(t *testing.T) {
 	// Test loading a valid stopwords file
 	t.Run("ValidStopwordsFile", func(t *testing.T) {

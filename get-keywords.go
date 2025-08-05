@@ -15,7 +15,11 @@ func getStringKeywords(content string, numKeywords int) {
 	wordSplitter := regexp.MustCompile(`[^a-zA-Z0-9]+`)
 
 	// get word count and frequency
-	wordCount := getWordCount(content, stopwords, wordSplitter)
+	wordCount, err := getWordCount(content, stopwords, wordSplitter)
+	if err != nil {
+		print("Error getting word count:", err)
+		return
+	}
 	wordFrequency := getWordFrequency(content, wordSplitter, wordCount)
 
 	// get keywords based on frquency of words that are not stopwords

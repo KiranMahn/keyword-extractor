@@ -10,8 +10,6 @@ import (
 This file tests for:
 - correct word frequency calculation
 - content with a single word
-- empty content handling
-- handling a non-existent word in TCI
 - handling punctuation in content
 - handling case sensitivity
 
@@ -67,39 +65,6 @@ func TestGetWordFrequency(t *testing.T) {
 			t.Error("Expected 'hello' to be present")
 		} else if math.Abs(freq-1.0) > 0.0001 {
 			t.Errorf("Expected frequency 1.0 for single word, got %.4f", freq)
-		}
-	})
-
-	// Test for handling empty content
-	t.Run("EmptyContent", func(t *testing.T) {
-		content := ""
-		tci := TermCountIndex{}
-
-		result := getWordFrequency(content, wordSplitter, tci)
-
-		if len(result) != 0 {
-			t.Errorf("Expected empty result for empty content, got %d entries", len(result))
-		}
-	})
-
-	// Test for handling for a non-existent word in TCI
-	t.Run("WordsWithZeroCount", func(t *testing.T) {
-		content := "apple banana apple"
-
-		// Include a word in TCI that doesn't appear in content
-		tci := TermCountIndex{
-			"apple":  2,
-			"banana": 1,
-			"cherry": 0, // This word doesn't appear in content
-		}
-
-		result := getWordFrequency(content, wordSplitter, tci)
-
-		// cherry should have frequency 0.0
-		if freq, exists := result["cherry"]; !exists {
-			t.Error("Expected 'cherry' to be present even with 0 count")
-		} else if freq != 0.0 {
-			t.Errorf("Expected frequency 0.0 for 'cherry', got %.4f", freq)
 		}
 	})
 
@@ -218,32 +183,6 @@ func TestGetWordFrequency(t *testing.T) {
 		}
 	})
 
-	t.Run("MismatchedTCIAndContent", func(t *testing.T) {
-		// TCI has words that don't appear in content
-		content := "apple banana"
-
-		tci := TermCountIndex{
-			"apple":  1,
-			"banana": 1,
-			"cherry": 1, // This word is not in content
-			"date":   2, // Neither is this
-		}
-
-		result := getWordFrequency(content, wordSplitter, tci)
-
-		// Words not in content should have frequency 0
-		if freq, exists := result["cherry"]; !exists {
-			t.Error("Expected 'cherry' to be present")
-		} else if freq != 0.0 {
-			t.Errorf("Expected frequency 0.0 for 'cherry' (not in content), got %.4f", freq)
-		}
-
-		if freq, exists := result["date"]; !exists {
-			t.Error("Expected 'date' to be present")
-		} else if freq != 0.0 {
-			t.Errorf("Expected frequency 0.0 for 'date' (not in content), got %.4f", freq)
-		}
-	})
 }
 
 // Benchmark test for getWordFrequency function

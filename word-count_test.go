@@ -38,8 +38,11 @@ func TestGetWordCount(t *testing.T) {
 	// Test that the correct word count is returned
 	t.Run("BasicWordCounting", func(t *testing.T) {
 		content := "The quick brown fox jumps over the lazy dog"
-		result := getWordCount(content, stopwords, wordSplitter)
+		result, err := getWordCount(content, stopwords, wordSplitter)
 
+		if err != nil {
+			t.Fatalf("Expected no error, got: %v", err)
+		}
 		// Expected words (excluding stopwords "the" and short words)
 		expectedWords := map[string]int{
 			"quick": 1,
@@ -75,7 +78,11 @@ func TestGetWordCount(t *testing.T) {
 	// Test handling of repeated words
 	t.Run("RepeatedWords", func(t *testing.T) {
 		content := "apple banana apple cherry banana apple"
-		result := getWordCount(content, stopwords, wordSplitter)
+		result, err := getWordCount(content, stopwords, wordSplitter)
+
+		if err != nil {
+			t.Fatalf("Expected no error, got: %v", err)
+		}
 
 		expected := map[string]int{
 			"apple":  3,
@@ -96,7 +103,11 @@ func TestGetWordCount(t *testing.T) {
 	// Test case insensitivity
 	t.Run("CaseInsensitive", func(t *testing.T) {
 		content := "Apple APPLE apple ApPlE"
-		result := getWordCount(content, stopwords, wordSplitter)
+		result, err := getWordCount(content, stopwords, wordSplitter)
+
+		if err != nil {
+			t.Fatalf("Expected no error, got: %v", err)
+		}
 
 		if count, exists := result["apple"]; !exists {
 			t.Error("Expected 'apple' to be present")
@@ -116,7 +127,11 @@ func TestGetWordCount(t *testing.T) {
 	// Test that small words are not counted
 	t.Run("FilterShortWords", func(t *testing.T) {
 		content := "a an the programming go is fun"
-		result := getWordCount(content, stopwords, wordSplitter)
+		result, err := getWordCount(content, stopwords, wordSplitter)
+
+		if err != nil {
+			t.Fatalf("Expected no error, got: %v", err)
+		}
 
 		// Words with length <= 2 should be filtered out
 		shortWords := []string{"a", "an", "go", "is"}
@@ -138,7 +153,11 @@ func TestGetWordCount(t *testing.T) {
 	// Test for filtering out words starting with digits
 	t.Run("FilterDigitWords", func(t *testing.T) {
 		content := "123 456 abc 789def hello 2023 world"
-		result := getWordCount(content, stopwords, wordSplitter)
+		result, err := getWordCount(content, stopwords, wordSplitter)
+
+		if err != nil {
+			t.Fatalf("Expected no error, got: %v", err)
+		}
 
 		// Words starting with digits should be filtered out
 		digitWords := []string{"123", "456", "789def", "2023"}
@@ -160,28 +179,30 @@ func TestGetWordCount(t *testing.T) {
 	// Test for empty content
 	t.Run("EmptyContent", func(t *testing.T) {
 		content := ""
-		result := getWordCount(content, stopwords, wordSplitter)
-
-		if len(result) != 0 {
-			t.Errorf("Expected empty result for empty content, got %d words", len(result))
+		_, err := getWordCount(content, stopwords, wordSplitter)
+		if err == nil {
+			t.Fatalf("Expected error, got: %v", err)
 		}
 	})
 
 	// Test for content with only stopwords and short words
 	t.Run("OnlyStopwordsAndShortWords", func(t *testing.T) {
 		content := "the and of to a in is it an I"
-		result := getWordCount(content, stopwords, wordSplitter)
+		_, err := getWordCount(content, stopwords, wordSplitter)
 
-		if len(result) != 0 {
-			t.Errorf("Expected empty result when content only contains stopwords and short words, got %d words", len(result))
+		if err == nil {
+			t.Fatalf("Expected error, got: %v", err)
 		}
+
 	})
 
 	// Test for punctuation handling
 	t.Run("PunctuationHandling", func(t *testing.T) {
 		content := "Hello, world! How are you? I'm fine."
-		result := getWordCount(content, stopwords, wordSplitter)
-
+		result, err := getWordCount(content, stopwords, wordSplitter)
+		if err != nil {
+			t.Fatalf("Expected no error, got: %v", err)
+		}
 		expectedWords := []string{"hello", "world", "how", "are", "you", "fine"}
 		for _, word := range expectedWords {
 			if _, exists := result[word]; !exists {
@@ -202,8 +223,10 @@ func TestGetWordCount(t *testing.T) {
 	t.Run("EmptyStopwords", func(t *testing.T) {
 		content := "the quick brown fox"
 		emptyStopwords := make(map[string]struct{})
-		result := getWordCount(content, emptyStopwords, wordSplitter)
-
+		result, err := getWordCount(content, emptyStopwords, wordSplitter)
+		if err != nil {
+			t.Fatalf("Expected no error, got: %v", err)
+		}
 		// With no stopwords, all words longer than 2 chars should be included
 		expectedWords := []string{"the", "quick", "brown", "fox"}
 		for _, word := range expectedWords {
@@ -218,8 +241,10 @@ func TestGetWordCount(t *testing.T) {
 		content := "word1-word2_word3 word4"
 		// Custom splitter that splits on hyphens and underscores too
 		customSplitter := regexp.MustCompile(`[\s\-_]+`)
-		result := getWordCount(content, stopwords, customSplitter)
-
+		result, err := getWordCount(content, stopwords, customSplitter)
+		if err != nil {
+			t.Fatalf("Expected no error, got: %v", err)
+		}
 		expectedWords := []string{"word1", "word2", "word3", "word4"}
 		for _, word := range expectedWords {
 			if _, exists := result[word]; !exists {

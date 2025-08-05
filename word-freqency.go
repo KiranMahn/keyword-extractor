@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"regexp"
 	"sort"
 	"strings"
@@ -12,7 +13,7 @@ type TermFrequencyIndex map[string]float64
 
 // Returns a map of words and their counts from the content, excluding stopwords and short words
 // Takes a content string, a map of stopwords, and a regex for splitting words
-func getWordCount(content string, stopwords map[string]struct{}, wordSplitter *regexp.Regexp) TermCountIndex {
+func getWordCount(content string, stopwords map[string]struct{}, wordSplitter *regexp.Regexp) (TermCountIndex, error) {
 	tci := make(TermCountIndex)
 
 	// get words
@@ -28,11 +29,10 @@ func getWordCount(content string, stopwords map[string]struct{}, wordSplitter *r
 	}
 	// handle no valid words case
 	if len(tci) == 0 {
-		println("No valid words found in content")
-		return nil
+		return nil, errors.New("No valid words found in content")
 	}
 
-	return tci
+	return tci, nil
 }
 
 // Calculates the term frequency index from the content and word count by dividing the number of times each word appears by the total number of words

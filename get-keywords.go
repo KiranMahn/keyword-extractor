@@ -5,6 +5,7 @@ import (
 	"regexp"
 )
 
+// finds keywwords for text in a string
 func getStringKeywords(content string, numKeywords int) {
 	// parse text
 	stopwords, err := LoadStopwords("./data/stopwords.txt")
@@ -22,6 +23,7 @@ func getStringKeywords(content string, numKeywords int) {
 
 }
 
+// finds keywords for text from a given filepath
 func getFileKeywords(filePath string, numKeywords int) {
 	// load file to string
 	content, err := LoadFileContent(filePath)
